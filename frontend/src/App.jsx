@@ -1,27 +1,41 @@
-import { useState, useEffect } from 'react';
-import './App.css';
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Layout } from "./components/layout/layout";
+import { Shops } from "./pages/shops/shops";
+import { Cart } from "./pages/cart/cart";
+import { NotFound } from "./pages/not_found/not_found";
+import { getDBData } from "./functions/func";
 
+import "./App.css";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      {
+        path: "/",
+        element: <Shops />,
+        loader: getDBData,
+      },
+      {
+        path: "/cart",
+        element: <Cart />,
+      },
+    ],
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
+]);
 function App() {
-  const [drugs, setDrugs] = useState(0)
-  useEffect(()=>{
-    fetch("http://localhost:3000/api/v1/drugs")
-    .then(res=>res.json())
-    .then(data=>setDrugs(data))
-    .catch(error=>console.log(error))
-  },[])
-
   return (
-    <div>
-      <h1>My Drugs Store</h1>
-      <ul>
-       {
-        drugs.map((el,i)=>
-           <li key={i}>{el.drugs_name}</li>
-        )
-       }
-       </ul>
+    <div className="container">
+      <main>
+        <RouterProvider router={router} />
+      </main>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
